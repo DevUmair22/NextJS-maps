@@ -1,70 +1,33 @@
-"use client"
+'use client'
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { setCurrentStep } from '../store/slices/slices'; // Assuming you have a navigation slice in your Redux store
 
-import { MapComponent } from "@/components/MapComponent"
-import MapProvider from "@/components/MapProvider"
-import { useState } from "react"
-import Step1 from "./_components/Step1"
-import Step2 from "./_components/Step2"
-import Step3 from "./_components/Step3"
+const Navigation = () => {
+  const dispatch = useDispatch();
+  const currentStep = useSelector((state: RootState) => state.navigation.currentStep);
+  const allSteps = ['MEASUREMENT', 'SERVICES', 'ESTIMATE']; // Define all steps here
 
-enum Steps {
-  "MEASUREMENT" = "MEASUREMENT",
-  "SERVICES" = "SERVICES",
-  "ESTIMATE" = "ESTIMATE"
-}
-
-export default function Home() {
-
-  const allSteps = [Steps.ESTIMATE, Steps.MEASUREMENT, Steps.SERVICES]
-
-  const [currentStep, setCurrentStep] = useState(Steps.ESTIMATE)
-
-  // const RenderStep = () => {
-  //   if (currentStep === Steps.ESTIMATE) return <Step1 />
-  //   if (currentStep === Steps.MEASUREMENT) return <Step2 />
-  //   if (currentStep === Steps.SERVICES) return <Step3 />
-  // }
-
-  const RenderStep = () => {
-    const cureentStepContentComponent = {
-      [Steps.ESTIMATE]: <Step1 />,
-      [Steps.MEASUREMENT]: <Step2 />,
-      [Steps.SERVICES]: <Step3 />,
-
-    }
-    return cureentStepContentComponent[currentStep]
-  }
+  const handlePrev = () => {
+    // Dispatch an action to set the previous step
+    dispatch(setCurrentStep(currentStep - 1));
+  };
 
   const handleNext = () => {
-    const indexOfCurrentStep = allSteps.findIndex((each) => each == currentStep)
-    if (indexOfCurrentStep == allSteps.length - 1) return
-
-
-    setCurrentStep(allSteps[indexOfCurrentStep + 1])
-  }
-  const handlePrev = () => {
-    const indexOfCurrentStep = allSteps.findIndex((each) => each == currentStep)
-
-    if (indexOfCurrentStep == 0) return
-
-    setCurrentStep(allSteps[indexOfCurrentStep - 1])
-  }
+    // Dispatch an action to set the next step
+    dispatch(setCurrentStep(currentStep + 1));
+  };
 
   return (
-    // <MapProvider>
-    //   <MapComponent/>
-    // </MapProvider>
-    <div className="w-full h-screen bg-blue-400 flex flex-col">
-      <RenderStep />
-      <div>
-        <button onClick={handlePrev} >
-          PREVIOUS
-        </button>
-        <button onClick={handleNext}>
-          NEXT
-        </button>
-
-      </div>
+    <div>
+      <button onClick={handlePrev} disabled={currentStep === 0}>
+        PREVIOUS
+      </button>
+      <button onClick={handleNext} disabled={currentStep === allSteps.length - 1}>
+        NEXT
+      </button>
     </div>
-  )
-}
+  );
+};
+
+export default Navigation;
